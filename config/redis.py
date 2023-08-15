@@ -3,7 +3,7 @@ from decimal import Decimal
 from django_redis import get_redis_connection
 from redis.exceptions import ResponseError
 from redis.commands.json.path import Path
-from redis.commands.search.field import TextField
+from redis.commands.search.field import TextField, NumericField
 from redis.commands.search.indexDefinition import IndexDefinition, IndexType
 from redis.commands.search.query import Query
 from django.conf import settings
@@ -24,9 +24,13 @@ class RedisIndexingMixin:
             if isinstance(value, Decimal):
                 data[key] = float(value)
 
-            schema.append(TextField(f"${key}", as_name=key))
+            if isinstance(value, (int, float)):
+                schema.append(NumericField(f"$.{key}", as_name=key))
+            else:
+                data[key] = str(value)
+                schema.append(TextField(f"$.{key}", as_name=key))
 
-        index = r.ft(f"idx:{index_name}")
+        index = r.ft(index_name)
 
         try:
             index.create_index(
@@ -37,7 +41,7 @@ class RedisIndexingMixin:
             if "Index already exists" not in e.args:
                 raise e
 
-        r.json().set(f"{index_name}:{self.id}", Path.root_path(), json.dumps(data))
+        r.json().set(f"{index_name}:{self.id}", Path.root_path(), data)
 
     def delete_redis_index(self):
         index_name = self._meta.model_name
@@ -54,7 +58,7 @@ def get_json(index_name):
 
 
 def query_redis_index(index_name, query="*"):
-    index = r.ft(f"idx:{index_name}")
+    index = r.ft(index_name)
 
     try:
         result = index.search(Query(query))
