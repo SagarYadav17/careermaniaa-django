@@ -1,7 +1,6 @@
-from os import environ
-from dotenv import load_dotenv
+from config import infisical
 
-load_dotenv()  # take environment variables from .env.
+environ = infisical.get_secrets()
 
 DJANGO_SECRET_KEY = environ.get("DJANGO_SECRET_KEY", "e!%qy(nxwz-fs7lfuvv70uvx@@^8qizcn!cr-d^wh-h2shq2j6")
 

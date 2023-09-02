@@ -44,6 +44,7 @@ pre-commit==3.3.3
 prompt-toolkit==3.0.39
 psycopg2-binary==2.9.7
 pycodestyle==2.11.0
+pycryptodomex==3.18.0
 pyflakes==3.1.0
 PyJWT==2.8.0
 pymongo==4.4.1

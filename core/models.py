@@ -90,6 +90,28 @@ class City(RedisIndexingMixin, models.Model):
         super().delete(*args, **kwargs)
 
 
+class Locality(RedisIndexingMixin, models.Model):
+    name = models.CharField(max_length=255)
+    state = models.ForeignKey(State, on_delete=models.CASCADE)
+    district = models.CharField(max_length=255, blank=True, null=True)
+    division = models.CharField(max_length=255, blank=True, null=True)
+    pincode = models.CharField(max_length=6)
+
+    class Meta:
+        ordering = ["name"]
+
+    def __str__(self):
+        return "%s: %s: %s" % (self.name, self.state.name, self.pincode)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.create_redis_index()
+
+    def delete(self, *args, **kwargs):
+        self.delete_redis_index()
+        super().delete(*args, **kwargs)
+
+
 class Expertise(models.Model):
     name = models.CharField(max_length=255, unique=True)
     is_active = models.BooleanField(default=True)
