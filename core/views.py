@@ -11,12 +11,13 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from config.utils import check_pagination
-from core.models import City, Country, Expertise, Language, State
+from core.models import City, Country, Expertise, Language, State, Locality
 from core.serializers import (
     CitySerializer,
     CountrySerializer,
     ExpertiseSerializer,
     LanguageSerializer,
+    LocalitySerializer,
     StateSerializer,
 )
 
@@ -114,6 +115,14 @@ class ExpertiseListAPI(ListAPIView):
     @method_decorator(cache_page(settings.DEFAULT_CACHE_TIMEOUT))
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
+
+
+class LocalityListAPI(ListAPIView):
+    permission_classes = (AllowAny,)
+    queryset = Locality.objects.filter()
+    serializer_class = LocalitySerializer
+    filter_backends = (SearchFilter,)
+    search_fields = ("pincode",)
 
 
 class SMSWebhook(APIView):

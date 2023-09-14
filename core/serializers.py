@@ -1,6 +1,6 @@
 from rest_framework.serializers import CharField, ModelSerializer
 
-from core.models import City, Country, Expertise, Language, State
+from core.models import City, Country, Expertise, Language, Locality, State
 
 
 class CountrySerializer(ModelSerializer):
@@ -35,4 +35,10 @@ class LanguageSerializer(ModelSerializer):
 class ExpertiseSerializer(ModelSerializer):
     class Meta:
         model = Expertise
+        fields = "__all__"
+
+
+class LocalitySerializer(ModelSerializer):
+    class Meta:
+        model = Locality
         fields = "__all__"

@@ -8,5 +8,6 @@ urlpatterns = [
     path("city/", views.CityListAPI.as_view(), name="core-city"),
     path("language/", views.LanguageListAPI.as_view(), name="core-language"),
     path("expertise/", views.ExpertiseListAPI.as_view(), name="core-expertise"),
+    path("locality/", views.LocalityListAPI.as_view(), name="core-locality"),
     path("sms-webhook/<str:provider>/", views.SMSWebhook.as_view(), name="core-sms-webhook"),
 ]

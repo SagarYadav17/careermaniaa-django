@@ -95,7 +95,7 @@ class Locality(RedisIndexingMixin, models.Model):
     state = models.ForeignKey(State, on_delete=models.CASCADE)
     district = models.CharField(max_length=255, blank=True, null=True)
     division = models.CharField(max_length=255, blank=True, null=True)
-    pincode = models.CharField(max_length=6)
+    pincode = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
         ordering = ["name"]

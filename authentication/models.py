@@ -80,7 +80,8 @@ class UserManager(BaseUserManager):
         return user
 
     def create_superuser(self, username: str, phonenumber: str, password: str):
-        user = self.create_user(self, username, password, phonenumber)
+        usergroup_obj = Usergroup.objects.get_or_create(name="superuser")[0]
+        user = self.create_user(username=username, password=password, phonenumber=phonenumber, usergroup=usergroup_obj)
         user.is_superuser = True
         user.is_staff = True
         user.save()
