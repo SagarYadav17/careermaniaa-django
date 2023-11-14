@@ -4,7 +4,7 @@
 # If you need more help, visit the Dockerfile reference guide at
 # https://docs.docker.com/engine/reference/builder/
 
-FROM python:3-slim as base
+FROM python:3.11-slim as base
 
 # Prevents Python from writing pyc files.
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -45,4 +45,4 @@ COPY . .
 EXPOSE 8000
 
 # Run the application.
-CMD ["bash", "endpoint.sh"]
+CMD gunicorn 'config.wsgi' --bind=0.0.0.0:8000

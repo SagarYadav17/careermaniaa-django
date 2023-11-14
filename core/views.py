@@ -130,10 +130,10 @@ class SMSWebhook(APIView):
 
     def get(self, request, provider):
         with suppress(Exception):
-            create_sms_logs.delay(json.dumps(request.query_params), provider)
+            create_sms_logs(json.dumps(request.query_params), provider)
         return Response()
 
     def post(self, request, provider):
         with suppress(Exception):
-            create_sms_logs.delay(json.dumps(request.data), provider)
+            create_sms_logs(json.dumps(request.data), provider)
         return Response()

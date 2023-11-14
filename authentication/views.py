@@ -31,7 +31,7 @@ class LoginUsingOTPAPI(APIView):
         with suppress(User.DoesNotExist):
             get_object_or_error(User, phonenumber=PhoneNumber.from_string(phonenumber))
             otp, expired_sec = create_auth_otp(key=f"login-otp-{phonenumber}", otp_length=4)
-            send_sms.delay(f"Your Careermaniaa OTP is {otp}. Valid for {int(expired_sec / 60)} Minutes", phonenumber)
+            send_sms(f"Your Careermaniaa OTP is {otp}. Valid for {int(expired_sec / 60)} Minutes", phonenumber)
 
         return Response({"message": "New OTP is generated"})
 

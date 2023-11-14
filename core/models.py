@@ -103,13 +103,13 @@ class Locality(RedisIndexingMixin, models.Model):
     def __str__(self):
         return "%s: %s: %s" % (self.name, self.state.name, self.pincode)
 
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        self.create_redis_index()
+    # def save(self, *args, **kwargs):
+    #     super().save(*args, **kwargs)
+    #     self.create_redis_index()
 
-    def delete(self, *args, **kwargs):
-        self.delete_redis_index()
-        super().delete(*args, **kwargs)
+    # def delete(self, *args, **kwargs):
+    #     self.delete_redis_index()
+    #     super().delete(*args, **kwargs)
 
 
 class Expertise(models.Model):
