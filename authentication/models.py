@@ -1,3 +1,5 @@
+import uuid
+
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
@@ -6,7 +8,8 @@ from config.upload_to_paths import BANK_DETAIL_KYC_FILES
 from core.models import City, Language, TimestampedModel
 
 
-class Usergroup(models.Model):
+class Usergroup(TimestampedModel):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255, unique=True)
     is_active = models.BooleanField(default=True)
 
@@ -14,7 +17,8 @@ class Usergroup(models.Model):
         return self.name
 
 
-class BankName(models.Model):
+class BankName(TimestampedModel):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255, unique=True)
     is_active = models.BooleanField(default=True)
 
@@ -22,7 +26,8 @@ class BankName(models.Model):
         return self.name
 
 
-class Profile(models.Model):
+class Profile(TimestampedModel):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255, blank=True)
     is_active = models.BooleanField(default=False)
     city = models.ForeignKey(City, on_delete=models.DO_NOTHING, null=True)
@@ -37,7 +42,8 @@ class Profile(models.Model):
         return self.name
 
 
-class BankDetail(models.Model):
+class BankDetail(TimestampedModel):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
     bank = models.ForeignKey(BankName, on_delete=models.PROTECT)
     account_holder_name = models.CharField(max_length=255)
@@ -53,7 +59,8 @@ class BankDetail(models.Model):
         return self.account_holder_name
 
 
-class Address(models.Model):
+class Address(TimestampedModel):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
     address = models.TextField(default="")
     postal_code = models.CharField(max_length=20, default="")
@@ -90,13 +97,14 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin, TimestampedModel):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     username = models.CharField(db_index=True, max_length=128, unique=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     profile = models.OneToOneField(Profile, on_delete=models.PROTECT)
     usergroup = models.ForeignKey(Usergroup, on_delete=models.PROTECT)
     phonenumber = PhoneNumberField(unique=True)
-    email = models.EmailField(max_length=None, unique=True, blank=True, null=True)
+    email = models.EmailField(max_length=50, unique=True, blank=True, null=True)
 
     USERNAME_FIELD = "phonenumber"
     REQUIRED_FIELDS = ["username"]

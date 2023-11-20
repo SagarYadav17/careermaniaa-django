@@ -1,6 +1,8 @@
 from pathlib import Path
 from datetime import timedelta
 
+from config.mongo import Mongo
+
 from config.envs import (
     DB_HOST,
     DB_NAME,
@@ -10,6 +12,7 @@ from config.envs import (
     DEBUG_MODE,
     REDIS_ENDPOINT,
     DJANGO_SECRET_KEY,
+    MONGO_ENDPOINT,
 )
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -94,6 +97,8 @@ DATABASES = {
         "PASSWORD": DB_PASSWORD,
     }
 }
+
+MONGO_CLIENT = Mongo(connection_string=MONGO_ENDPOINT, db_name="development")
 
 
 CACHES = {
