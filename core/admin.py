@@ -10,3 +10,4 @@ class StateAdmin(admin.ModelAdmin):
 @admin.register(City)
 class CityAdmin(admin.ModelAdmin):
     list_display = ("id", "name", "state")
+    search_fields = ("name",)

@@ -13,7 +13,7 @@ mongo_client = settings.MONGO_CLIENT
 class CitySerializer(serializers.ModelSerializer):
     id = serializers.CharField()
     name = serializers.ReadOnlyField()
-    state = serializers.ReadOnlyField(source="state.id")
+    state = serializers.CharField(source="state.id", read_only=True)
     district = serializers.ReadOnlyField()
     division = serializers.ReadOnlyField()
     region = serializers.ReadOnlyField()
@@ -28,8 +28,8 @@ class CitySerializer(serializers.ModelSerializer):
 @receiver(post_save, sender=City)
 def upload_data_in_mongo(sender, instance, created, *args, **kwargs):
     mongo_client.update_one(
-        "city",
-        {"id": instance.id},
-        {"$set": CitySerializer(instance).data},
+        collection_name="city",
+        query={"id": str(instance.id)},
+        data={"$set": CitySerializer(instance).data},
         upsert=True,
     )
