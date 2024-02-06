@@ -10,7 +10,6 @@ from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
-from config.utils import check_pagination
 from core.models import City, Country, Expertise, Language, State, Locality
 from core.serializers import (
     CitySerializer,
@@ -21,7 +20,6 @@ from core.serializers import (
     StateSerializer,
 )
 
-from config.redis import query_redis_index
 from core.tasks import create_sms_logs
 
 
@@ -32,18 +30,6 @@ class CountryListAPI(ListAPIView):
     filter_backends = (SearchFilter,)
     search_fields = ("name",)
 
-    def get_queryset(self):
-        self.pagination_class = check_pagination(self.request.query_params)
-        return super().get_queryset()
-
-    def get(self, request):
-        search = request.query_params.get("search")
-        if settings.FEATURE_FLAGS.get("use_redis_search"):
-            data = query_redis_index("country", search or "*")
-            return Response(data)
-
-        return super().get(request)
-
 
 class StateListAPI(ListAPIView):
     permission_classes = (AllowAny,)
@@ -51,18 +37,6 @@ class StateListAPI(ListAPIView):
     serializer_class = StateSerializer
     filter_backends = (SearchFilter,)
     search_fields = ("name",)
-
-    def get_queryset(self):
-        self.pagination_class = check_pagination(self.request.query_params)
-        return super().get_queryset()
-
-    def get(self, request):
-        search = request.query_params.get("search")
-        if settings.FEATURE_FLAGS.get("use_redis_search"):
-            data = query_redis_index("state", search or "*")
-            return Response(data)
-
-        return super().get(request)
 
 
 class CityListAPI(ListAPIView):
@@ -72,18 +46,6 @@ class CityListAPI(ListAPIView):
     filter_backends = (SearchFilter,)
     search_fields = ("name",)
 
-    def get_queryset(self):
-        self.pagination_class = check_pagination(self.request.query_params)
-        return super().get_queryset()
-
-    def get(self, request):
-        search = request.query_params.get("search")
-        if settings.FEATURE_FLAGS.get("use_redis_search"):
-            data = query_redis_index("city", search or "*")
-            return Response(data)
-
-        return super().get(request)
-
 
 class LanguageListAPI(ListAPIView):
     permission_classes = (AllowAny,)
@@ -91,10 +53,6 @@ class LanguageListAPI(ListAPIView):
     serializer_class = LanguageSerializer
     filter_backends = (SearchFilter,)
     search_fields = ("name_en",)
-
-    def get_queryset(self):
-        self.pagination_class = check_pagination(self.request.query_params)
-        return super().get_queryset()
 
     @method_decorator(cache_page(settings.DEFAULT_CACHE_TIMEOUT))
     def get(self, request, *args, **kwargs):
@@ -107,10 +65,6 @@ class ExpertiseListAPI(ListAPIView):
     serializer_class = ExpertiseSerializer
     filter_backends = (SearchFilter,)
     search_fields = ("name",)
-
-    def get_queryset(self):
-        self.pagination_class = check_pagination(self.request.query_params)
-        return super().get_queryset()
 
     @method_decorator(cache_page(settings.DEFAULT_CACHE_TIMEOUT))
     def get(self, request, *args, **kwargs):
@@ -130,10 +84,10 @@ class SMSWebhook(APIView):
 
     def get(self, request, provider):
         with suppress(Exception):
-            create_sms_logs.delay(json.dumps(request.query_params), provider)
+            create_sms_logs(json.dumps(request.query_params), provider)
         return Response()
 
     def post(self, request, provider):
         with suppress(Exception):
-            create_sms_logs.delay(json.dumps(request.data), provider)
+            create_sms_logs(json.dumps(request.data), provider)
         return Response()
